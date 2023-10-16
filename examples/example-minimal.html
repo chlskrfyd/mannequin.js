@@ -38,6 +38,7 @@
 					raycaster.setFromCamera(mouse, camera);
 
 					// 레이와 man 객체가 교차하는지 확인합니다. 교차 정보는 intersects 배열에 저장됩니다.
+					//2번째 매개변수 false로 하면 동작안함.
 					const intersects = raycaster.intersectObject(man, true);
 
 					// 교차하는 객체가 있다면,
