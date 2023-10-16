@@ -2,50 +2,51 @@
 
 <html>
 	<body>
+		<!-- Three.js 라이브러리를 불러옵니다. -->
 		<script src="../libs/three.min.js"></script>
+		<!-- 커스텀 스크립트 (mannequin.js)를 불러옵니다. -->
 		<script src="../mannequin.js"></script>
-		
+
 		<script>
 			
 			createScene();
 			man = new Male();
-			
-			
-			// 마우스 다운 이벤트 리스너 추가
+
+			//Three.js에서 WebGLRenderer 객체를 생성하면, 이 객체는 3D 씬을 렌더링하는 데 사용될 DOM 요소를 자동으로 생성합니다.
+			//이 DOM 요소는 <canvas> 태그이며, renderer.domElement 속성을 통해 접근할 수 있습니다.
 			renderer.domElement.addEventListener('mousedown', onMouseDown);
-			
+
 			function onMouseDown(event) {
-				// 왼쪽 마우스 버튼이 눌렸을 때
+				// 왼쪽 마우스 버튼이 눌렸을 경우만 처리합니다. (event.button === 0)
 				if (event.button === 0) {
-					// 클릭한 좌표를 가져옴
+					// 이 코드는 Three.js의 Vector2 클래스를 사용하여 2차원 벡터를 생성합니다. 
+					//여기서 이 벡터는 마우스의 스크린 좌표를 저장하기 위해 사용됩니다.
 					const mouse = new THREE.Vector2();
+
+					// 마우스의 스크린 X 좌표를 NDC (Normalized Device Coordinates) 좌표계로 변환합니다.
 					mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+					// 마우스의 스크린 Y 좌표를 NDC 좌표계로 변환합니다. Y 축은 뒤집혀 있기 때문에 -를 붙여줍니다.
 					mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-					// 클릭한 좌표를 모델 좌표 공간으로 변환
+					// Raycaster 객체를 생성합니다. 이 객체는 레이 캐스팅을 수행할 때 사용됩니다.
+					//레이 캐스팅이란, 가상의 선(레이)을 특정 방향으로 쏘아 해당 선과 교차하는 객체를 찾는 기술입니다. 
+					//Raycaster는 주로 마우스 클릭 또는 터치와 같은 사용자 입력을 3D 객체와 매핑할 때 사용됩니다.
+					//Raycaster 객체를 생성한 후, .setFromCamera() 메서드를 사용하여 레이의 시작점과 방향을 설정합니다. 
+					//이후 .intersectObject() 또는 .intersectObjects() 메서드를 사용하여 레이와 교차하는 객체를 찾을 수 있습니다.
 					const raycaster = new THREE.Raycaster();
+					// 마우스 위치와 카메라를 기반으로 레이 캐스터를 설정합니다.
 					raycaster.setFromCamera(mouse, camera);
 
-					// 모델과의 교차점 계산
+					// 레이와 man 객체가 교차하는지 확인합니다. 교차 정보는 intersects 배열에 저장됩니다.
 					const intersects = raycaster.intersectObject(man, true);
 
+					// 교차하는 객체가 있다면,
 					if (intersects.length > 0) {
-						// 클릭한 파츠를 식별
-						const clickedPart = identifyClickedPart(intersects[0].object);
-
-						// 클릭한 파츠의 가시성을 토글
-						clickedPart.visible = !clickedPart.visible;
+						// 첫 번째 교차하는 객체의 가시성을 토글합니다.
+						// visible이 true라면 false로, false라면 true로 바뀝니다.
+						intersects[0].object.visible = !intersects[0].object.visible;
 					}
 				}
-			}
-
-			// 클릭한 파츠 식별 함수
-			function identifyClickedPart(object) {
-				// 여기에서 object를 분석하여 클릭한 파츠를 식별
-				// 예: object.name 또는 다른 속성을 사용하여 식별
-				// 필요한 경우 각 파츠에 고유한 이름 또는 속성을 지정하십시오.
-				// 예: man.l_leg.name = "left_leg" 등
-				return object; // 클릭한 파츠 반환
 			}
 		</script>
 	</body>
