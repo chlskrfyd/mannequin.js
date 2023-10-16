@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+	<body>
+		<!-- Three.js 라이브러리를 불러옵니다. -->
+		<script src="../libs/three.min.js"></script>
+		<script src="../mannequin.js"></script>
+		<!-- GLTFLoader을 cdn으로 불러옵니다. -->
+		<script src="https://cdn.jsdelivr.net/npm/three@latest/examples/js/loaders/GLTFLoader.js"></script>
+
+		<script>
+			// 씬을 초기화합니다.
+			createScene();
+
+			// GLTFLoader 객체를 생성합니다.
+			const loader = new THREE.GLTFLoader();
+			
+			// .glb 모델을 불러옵니다.
+			loader.load('../models/my_model.glb', function(gltf) {
+				const model = gltf.scene;
+				
+				// 모델의 위치와 크기를 설정합니다.
+				model.position.set(0, -30, 30);  // 위치 설정
+				model.scale.set(30, 30, 30);  // 크기 설정
+				
+				// 씬에 모델을 추가합니다.
+				scene.add(model);
+
+				// 모델이 불러와진 후에 이벤트 리스너를 설정합니다.
+				renderer.domElement.addEventListener('mousedown', function(event) {
+					const mouse = new THREE.Vector2();
+					mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+					mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+					const raycaster = new THREE.Raycaster();
+					raycaster.setFromCamera(mouse, camera);
+
+					// 모델과 레이와의 교차를 확인합니다.
+					const intersects = raycaster.intersectObject(model, true);
+
+					// 교차하는 객체가 있다면,
+					if (intersects.length > 0) {
+						// 첫 번째 교차하는 객체의 가시성을 토글합니다.
+						// visible이 true라면 false로, false라면 true로 바뀝니다.
+						intersects[0].object.visible = !intersects[0].object.visible;
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
